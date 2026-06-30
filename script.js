@@ -118,7 +118,13 @@ function buildPlaylist() {
      3. Write an if / else if that assigns `songs` based on
         the mode
      ===================================================== */
-
+     const mode = modeSelector.value;
+     let songs;
+     if (mode === "quickPlay") {
+       songs = allSongs.slice(0, 3); // Use only the first 3 songs for quick play
+     } else if (mode === "fullSession") {
+       songs = allSongs;
+     }
 
 
   /* =====================================================
@@ -164,7 +170,17 @@ function buildPlaylist() {
 
      YOUR CODE GOES HERE:
      ===================================================== */
+     container.innerHTML = "";
+     songRemovedCount = 0;
+     milestone.textContent = "";
 
+     if (songs.length === 0) {
+       feedback.textContent = "No songs found.";
+       feedback.className = "feedback-box error";
+     } else {
+       feedback.textContent = `${songs.length} songs loaded.`;
+       feedback.className = "feedback-box success";
+     }
 
 
   /* =====================================================
@@ -181,8 +197,7 @@ function buildPlaylist() {
 
      YOUR CODE GOES HERE:
      ===================================================== */
-
-
+     songs.forEach((song) => {
 
     /* =====================================================
        DEV TEAMS — STEP 8: Create and Display DOM Elements
@@ -207,8 +222,32 @@ function buildPlaylist() {
 
        YOUR CODE GOES HERE:
        ===================================================== */
+       // Create the row div
+       const row = document.createElement("div");
+       row.className = "song-row";
 
+       // Create the image element
+       const img = document.createElement("img");
+       img.src = song.cover;
+       img.alt = song.title;
+       img.onerror = function () {
+         this.src = "https://placehold.co/60x60?text=Music";
+       };
+       
+       // Create the title span
+       const titleSpan = document.createElement("span");
+       titleSpan.textContent = song.title;
 
+       // Create the remove hint span
+       const removeHintSpan = document.createElement("span");
+       removeHintSpan.className = "remove-hint";
+       removeHintSpan.textContent = "click to remove";
+
+       // Append elements to the row and the row to the container
+       row.appendChild(img);
+       row.appendChild(titleSpan);
+       row.appendChild(removeHintSpan);
+       container.appendChild(row);
 
     /* =====================================================
        DEV TEAMS — STEP 9: DOM Element Removal on Click
@@ -236,9 +275,15 @@ function buildPlaylist() {
 
        YOUR CODE GOES HERE:
        ===================================================== */
-
-
-
+       row.addEventListener("click", function () {
+         row.classList.add("removing");
+         setTimeout(function () {
+           row.remove();
+           songsRemovedCount++;
+           updateMilestone();
+         }, 200);
+       });
+     });
   // (Make sure your Step 7 loop closes here.)
 
 
@@ -265,6 +310,22 @@ function buildPlaylist() {
 
      YOUR CODE GOES HERE:
      ===================================================== */
-
+    function updateMilestone() {
+      const milestones = [
+        { count: 1, message: "🎵 First song cleared!" },
+        { count: 5, message: "🎵 Five songs cleared!" },
+        { count: 10, message: "🎵 Ten songs cleared!" }
+      ];
+      
+      // Check each milestone to see if it has been reached
+      milestones.forEach(function (milestone) {
+        if (songsRemovedCount === milestone.count) {
+          const milestoneElement = document.getElementById("milestone");
+          if (milestoneElement) {
+            milestoneElement.textContent = milestone.message;
+          }
+        }
+      });
+    }
 
 }
